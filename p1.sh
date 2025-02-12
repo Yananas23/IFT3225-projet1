@@ -1,9 +1,8 @@
 #!/usr/bin/tcsh -f
 
-
 # Initialisation des variables
 set regex = ""
-set path = ""
+set save = ""
 set url = ""
 set img = "true"
 set vid = "true"
@@ -20,7 +19,7 @@ while ($#argv > 0)
                 echo "Erreur: -r nécessite une regex en argument."
                 exit 1
             endif
-            $regex = $argv[2]
+            set regex = $argv[2]
             shift  # Supprime "-r"
             shift  # Supprime la regex
             breaksw
@@ -30,17 +29,19 @@ while ($#argv > 0)
                 echo "Erreur: -p nécessite un chemin en argument."
                 exit 1
             endif
-            set path = $argv[2]
+            set save = $argv[2]
             shift  # Supprime "-p"
             shift  # Supprime le chemin
             breaksw
 
         case "-i": # Option -i, retire les images du résultat
             set img = "false"
+            shift # Supprime "-i"
             breaksw
 
         case "-v": # Option -v, retire les vidéos du résultat
             set vid = "false"
+            shift # Supprime "-v"
             breaksw
 
         case "-h":  # Option d'aide
@@ -61,13 +62,13 @@ end
 # Vérification et affichage des valeurs récupérées
 if ("$url" == "") then
     echo "Erreur: Aucun paramètre fourni."
+    echo ""
     goto afficher_aide
 else
     goto get_all
 endif
 
 # Sortir du script
-exit 0
 
 # Label pour afficher le message d'aide
 afficher_aide:
@@ -81,9 +82,40 @@ afficher_aide:
     echo "  -h          Afficher ce message d'aide et quitter"
     echo ""
     echo "Auteurs: Yanis Boulogne - Karl-Antoine Plouffe"
-exit 1
+exit
 
 
 get_all:
-    echo a faire
+    # Affichage du chemin du site
+    echo "PATH $url"
 
+    # Extraction des images et vidéos
+    # Extraction des balises <img>
+    if ("$img" == "true") then
+        set img_tags = (`curl -s $url | grep -oE '<img[^>]+>'`)
+        
+        echo $img_tags
+        foreach img_tag ($img_tags)
+            set src = `echo $img_tag | sed -n 's/.*src=["'"'"]\([^"'"'"]*\).*/\1/p'`
+            set alt = `echo $img_tag | sed -n 's/.*alt=["'"'"]\([^"'"'"]*\).*/\1/p'`
+
+            if ("$src" != "") then
+                if ("$alt" != "") then
+                    echo "IMAGE $src \"$alt\""
+                    echo ""
+                else
+                    echo "IMAGE $src"
+                    echo ""
+                endif
+            endif
+        end
+    endif
+
+    if ("$vid" == "true") then
+        # Extraction des balises <video>
+        set videos = (`curl -s $url | grep -oE '<video[^>]+src=["][^"]+["]' | sed -n 's/.*src=["]\([^"]*\)["].*/\1/p'`)
+
+        foreach vid ($videos)
+            echo "VIDEO $vid"
+        end
+    endif
