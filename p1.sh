@@ -7,6 +7,10 @@ set url = ""
 set img = "true"
 set vid = "true"
 
+set img_src = ()
+set alts = ()
+set vid_src = ()
+
 # Vérification des arguments
 if ($#argv == 0) then
     goto afficher_aide
@@ -92,30 +96,44 @@ get_all:
     # Extraction des images et vidéos
     # Extraction des balises <img>
     if ("$img" == "true") then
-        set img_tags = (`curl -s $url | grep -oE '<img[^>]+>'`)
-        
-        echo $img_tags
-        foreach img_tag ($img_tags)
-            set src = `echo $img_tag | sed -n 's/.*src=["'"'"]\([^"'"'"]*\).*/\1/p'`
-            set alt = `echo $img_tag | sed -n 's/.*alt=["'"'"]\([^"'"'"]*\).*/\1/p'`
 
-            if ("$src" != "") then
-                if ("$alt" != "") then
-                    echo "IMAGE $src \"$alt\""
-                    echo ""
-                else
-                    echo "IMAGE $src"
-                    echo ""
-                endif
+        # Boucle pour traiter chaque balise img
+        foreach src (`curl -s "$url" | grep -o '<img [^>]*>' | sed -E 's/.*src="([^"]*)".*/\1/'`)
+            set alt = (`curl -s "$url" | grep -o '<img [^>]*>' | grep "$src" | sed -E 's/.*alt="([^"]*)".*/\1/' | sed 's/ /°/g'`)
+
+
+            set img_src = ( $img_src "$src" )
+            if ("$alt" == "") then
+                set alts = ($alts "")
+            else
+                set alts = ($alts $alt)
             endif
+
         end
     endif
 
     if ("$vid" == "true") then
         # Extraction des balises <video>
-        set videos = (`curl -s $url | grep -oE '<video[^>]+src=["][^"]+["]' | sed -n 's/.*src=["]\([^"]*\)["].*/\1/p'`)
+        set videos = (`curl -s "$url" | grep -oE '<video[^>]+src=["][^"]+["]' | sed -n 's/.*src=["]\([^"]*\)["].*/\1/p'`)
 
         foreach vid ($videos)
             echo "VIDEO $vid"
         end
     endif
+
+    goto affiche
+exit
+
+affiche:
+    @ i = 1
+    foreach src ($img_src)
+        set alt = `eval echo $alts[$i] | tr '°' ' '`
+        if ("$src" != "") then
+            if ("$alt" != "") then
+                echo "IMAGE $src $alt"
+            else
+                echo "IMAGE $src"
+            endif
+        endif
+        @ i++
+    end
