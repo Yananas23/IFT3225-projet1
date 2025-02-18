@@ -99,7 +99,7 @@ get_all:
 
         # Boucle pour traiter chaque balise img
         foreach src (`curl -s "$url" | grep -o '<img [^>]*>' | sed -E 's/.*src="([^"]*)".*/\1/'`)
-            set alt = (`curl -s "$url" | grep -o '<img [^>]*>' | grep "$src" | sed -E 's/.*alt="([^"]*)".*/\1/' | sed 's/ /°/g'`)
+            set alt = (`curl -s "$url" | grep -o '<img [^>]*>' | grep "$src" | sed -E 's/.*alt="([^"]*)".*/\1/'`)
 
 
             set img_src = ( $img_src "$src" )
@@ -127,7 +127,7 @@ exit
 affiche:
     @ i = 1
     foreach src ($img_src)
-        set alt = `eval echo $alts[$i] | tr '°' ' '`
+        set alt = `eval echo $alts[$i]`
         if ("$src" != "") then
             if ("$alt" != "") then
                 echo "IMAGE $src $alt"
