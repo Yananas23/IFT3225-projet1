@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang=”fr”>
+<head>
+    <title>Visualisateur</title>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+    <div>
+        <h1 class="text-center">Visualisateur</h1>
+        <h6 class="text-center">d'images/vidéo</h6>
+    </div>
+    <div class="maindisplay">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ressource</th>
+                    <th>alt</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Ligne vide pour "inverser" l'affichage de table-striped -->
+                <tr class="d-none"></tr>
+                <!-- Tests à ignorer -->
+                <tr>
+                    <td>test1</td>
+                    <td>test1</td>
+                </tr>
+                <tr>
+                    <td>test2</td>
+                    <td>test2</td>
+                </tr>
+                <tr>
+                    <td>test3</td>
+                    <td>test3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row gy-2 buttoncontainer">
+        <div class="col-md-6 text-xs-start text-md-end">
+                <button type="button" class="btn btn-primary mx-5 w-25">Carrousel</button>   
+        </div>
+        <div class="col-md-6 text-xs-start">
+                <button type="button" class="btn btn-primary mx-5 w-25">Gallerie</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="sccript.js"></script>
+</body>
+</html>
