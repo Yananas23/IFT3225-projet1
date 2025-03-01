@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#Ajouter shebang pour déploiement au DIRO : !/usr/bin/python
 import os
 import re
 import requests
