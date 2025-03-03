@@ -10,8 +10,8 @@
         <h1 class="text-center">Visualisateur</h1>
         <h6 class="text-center">d'images/vidéo</h6>
     </div>
-    <div class="maindisplay">
-        <table class="table table-striped">
+    <div class="maindisplay" id="mainContent">
+        <table class="table table-striped" id="mainTable">
             <thead>
                 <tr>
                     <th>ressource</th>
@@ -23,29 +23,29 @@
                 <tr class="d-none"></tr>
                 <!-- Tests à ignorer -->
                 <tr>
-                    <td>test1</td>
-                    <td>test1</td>
+                    <td>image/video path 1</td>
+                    <td>image/video alt 1</td>
                 </tr>
                 <tr>
-                    <td>test2</td>
-                    <td>test2</td>
+                    <td>image/video path 2</td>
+                    <td>image/video alt 2</td>
                 </tr>
                 <tr>
-                    <td>test3</td>
-                    <td>test3</td>
-                </tr>
+                    <td>image/video path 3</td>
+                    <td>image/video alt 3</td>
+                </tr>               
             </tbody>
         </table>
     </div>
-    <div class="row gy-2 buttoncontainer">
+    <div class="row gy-2 mt-3" id="buttonContainer">
         <div class="col-md-6 text-xs-start text-md-end">
-                <button type="button" class="btn btn-primary mx-5 w-25">Carrousel</button>   
+                <button type="button" class="btn btn-primary mx-5 w-25" id="carouselButton">Carrousel</button>   
         </div>
         <div class="col-md-6 text-xs-start">
-                <button type="button" class="btn btn-primary mx-5 w-25">Gallerie</button>
+                <button type="button" class="btn btn-primary mx-5 w-25" id="galleryButton">Gallerie</button>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="sccript.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
