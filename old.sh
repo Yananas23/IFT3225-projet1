@@ -1,5 +1,9 @@
 #!/usr/bin/tcsh -f
 
+
+
+
+
 # Initialisation des variables
 set regex = ""
 set save = ""
