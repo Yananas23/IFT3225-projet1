@@ -10,6 +10,9 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 
 def help():
+    """
+    Affiche le message d'aide pour l'utilisation du script.
+    """
     print("Usage: extract | genere >! fichier_sortie")
     print("Options:")
     print("  -h              Affiche ce message d'aide et les auteurs")
@@ -18,6 +21,16 @@ def help():
     sys.exit(0)
 
 def generer_html(images, videos):
+    """
+    Génère le contenu HTML en insérant les ressources images et vidéos dans un modèle existant.
+
+    :param images: Liste de tuples (src, alt) représentant les images.
+    :param videos: Liste des chemins des vidéos.
+    :return: Contenu HTML sous forme de chaîne de caractères avec les ressources insérées dans la balise <tbody>.
+
+    Cette fonction lit un fichier template.html existant et y insère les ressources fournies (images et vidéos)
+    dans la section <tbody>. En cas d'erreur de lecture du modèle, le script s'arrête avec un message approprié.
+    """
     try:
         with open("template.html", "r", encoding="utf-8") as template_file:
             template = template_file.read()
@@ -40,6 +53,16 @@ def generer_html(images, videos):
     return template
 
 def adjust_src(path, src):
+    """
+    Ajuste le chemin d'une ressource en fonction du chemin de base fourni.
+
+    :param path: Chemin de base donné (ex: './' ou une URL).
+    :param src: Chemin relatif de la ressource.
+    :return: Chemin ajusté de la ressource sous forme de chaîne de caractères.
+
+    Si le chemin commence par './', seule la dernière partie du chemin est conservée.
+    Si le chemin est une URL, il est concaténé directement avec la source.
+    """
     if path.startswith("./"):
         # Garde uniquement ce qui suit le dernier '/'
         src = src.rsplit("/", 1)[-1]
@@ -52,6 +75,12 @@ def adjust_src(path, src):
 
 
 def main():
+    """
+    Fonction principale du script.
+    
+    Cette fonction lit l'entrée standard, analyse les informations sur les images et vidéos,
+    ajuste les chemins des ressources, et génère un contenu HTML.
+    """
     args = sys.argv
     if "-h" in args or len(args) == 0:
         help()

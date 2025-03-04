@@ -98,7 +98,9 @@ def help():
 
 def main():
     """
-    Fonction principale du script. Analyse les arguments et exécute les actions appropriées.
+    Fonction principale du script.
+    
+    Analyse les arguments et exécute les actions appropriées.
     """
     import sys
     args = sys.argv[1:]
