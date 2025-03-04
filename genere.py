@@ -63,15 +63,21 @@ def adjust_src(path, src):
     Si le chemin commence par './', seule la dernière partie du chemin est conservée.
     Si le chemin est une URL, il est concaténé directement avec la source.
     """
-    if path.startswith("./"):
+    if path.endswith("./"):
         # Garde uniquement ce qui suit le dernier '/'
+        src = src.rsplit("/", 1)[-1]
+        return f"{path}{src}"
+    
+    elif path.startswith("./") or path.startswith("/"):
         src = src.rsplit("/", 1)[-1]
         return f"{path}/{src}"
     
     elif path.startswith("http"):
         return f"{path}{src}"
     
-    return src
+    else:
+        src = src.rsplit("/", 1)[-1]
+        return f"{path}/{src}"
 
 
 def main():
