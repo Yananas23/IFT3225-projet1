@@ -26,7 +26,8 @@ function initializeData() {
         const cells = row.querySelectorAll('td');
         const src = cells[0]?.textContent || '';
         const alt = cells[1]?.textContent || '';
-        if (src && alt) {
+
+        if (src) {
             if (isVideo(src)) {
                 videoData.push({ src, alt });
             } else {
@@ -56,7 +57,7 @@ function createPreviewBubble(content) { // Fonction pour afficher une bulle de p
 
 // Fonction pour décaler une bulle par rapport à la souris
 function positionPreviewBubble(bubble, x, y) {
-    // TODO : Touver une alternative à style
+    // TODO : Touver une alternative à style pour ne pas avoir de style "inline"
     bubble.style.left = `${x + 10}px`;
     bubble.style.top = `${y + 10}px`;
 }
@@ -67,11 +68,10 @@ function attachImagePreviewListeners() {
     rows.forEach((row, index) => {
         // Obtenir le chemin et le alt à partir de la table
         const cells = row.querySelectorAll('td');
-        const src = cells[0]?.textContent.trim() || '';
-        const alt = cells[1]?.textContent.trim() || '';
-
+        const src = cells[0]?.textContent || '';
+        const alt = cells[1]?.textContent || '';
         
-        if (index === 0 || !src || !alt || isVideo(src)) { // Sauter les lignes sans image
+        if (index === 0 || !src || isVideo(src)) { // Sauter les lignes sans image
             return;
         }
 
@@ -137,7 +137,7 @@ function showTableView() {
         const cell1 = document.createElement('td');
         cell1.textContent = image.src;
         const cell2 = document.createElement('td');
-        cell2.textContent = image.alt;
+        cell2.textContent = image.alt || '';
         row.appendChild(cell1);
         row.appendChild(cell2);
         tbody.appendChild(row);
@@ -149,7 +149,7 @@ function showTableView() {
         const cell1 = document.createElement('td');
         cell1.textContent = video.src;
         const cell2 = document.createElement('td');
-        cell2.textContent = video.alt;
+        cell2.textContent = video.alt || '';
         row.appendChild(cell1);
         row.appendChild(cell2);
         tbody.appendChild(row);
@@ -228,7 +228,7 @@ function showCarousel() {
         const img = document.createElement('img');
         img.src = image.src;
         img.classList.add('d-block', 'w-100');
-        img.alt = image.alt;
+        img.alt = image.alt || '';
 
         carouselItem.appendChild(img);
         carouselInner.appendChild(carouselItem);
@@ -287,32 +287,21 @@ function showGallery() {
     const galleryContainer = document.createElement('div');
     galleryContainer.classList.add('row', 'row-cols-1', 'row-cols-md-3', 'g-4');
 
-    // Créer les items de la gallerie (cards)
+    // Créer les items de la gallerie
     imageData.forEach(image => {
         const col = document.createElement('div');
         col.classList.add('col');
 
-        const card = document.createElement('div');
-        card.classList.add('card');
-
+        // Créer l'image avec coins arrondis
         const img = document.createElement('img');
         img.src = image.src;
-        img.classList.add('card-img-top', 'object-fit-contain');
-        img.alt = image.alt;
+        img.classList.add('img-fluid', 'rounded');
+        img.alt = image.alt || '';
 
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-
-        const cardText = document.createElement('p');
-        cardText.classList.add('card-text');
-        cardText.textContent = image.alt;
-
-        cardBody.appendChild(cardText);
-        card.appendChild(img);
-        card.appendChild(cardBody);
-        col.appendChild(card);
+        col.appendChild(img);
         galleryContainer.appendChild(col);
-    });    
+    });
+ 
 
     // "wipe" du contenu existant et ajout du contenu de la gallerie
     document.getElementById('mainContent').innerHTML = '';
@@ -334,10 +323,12 @@ INITIALISATION
 document.addEventListener('DOMContentLoaded', function () {
     // Charger les données des images et vidéos
     initializeData();
+    
     // Event listeners pour les boutons
     document.getElementById('carouselButton').addEventListener('click', showCarousel);
     document.getElementById('galleryButton').addEventListener('click', showGallery);
     //console.log("Buttons are ready!");
+
     // Event listeners pour les previews
     attachImagePreviewListeners();
 });
