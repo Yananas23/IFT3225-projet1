@@ -1,8 +1,14 @@
 #Ajouter shebang pour déploiement au DIRO : !/usr/bin/python
+import sys
 import os
 import re
 import requests
 from bs4 import BeautifulSoup
+import io
+
+# Forcer l'encodage en UTF-8 sur l'entrée/sortie
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 def fetch_content(url):
     """
@@ -14,6 +20,7 @@ def fetch_content(url):
     try:
         response = requests.get(url)
         response.raise_for_status()  # Vérifie si la requête a réussi
+        response.encoding = 'utf-8'  # Force le décodage en UTF-8
         return response.text
     except requests.RequestException as e:
         print(f"Erreur lors de la récupération de la page: {e}")
@@ -29,7 +36,7 @@ def extract_images(soup, regex_filter):
     """
     images = []
     for img in soup.find_all("img"):  # Recherche toutes les balises <img>
-        src = img.get("src")[2:]  # Supprime le ./ du chemin de l'URL
+        src = img.get("src").lstrip("./")  # Supprime le ./ du chemin de l'URL
         alt = img.get("alt", "")  # Récupère le texte alternatif si présent
         if src:
             if not regex_filter or re.search(regex_filter, src):
@@ -47,7 +54,7 @@ def extract_videos(soup, regex_filter):
     videos = []
     for video in soup.find_all("video"):  # Recherche toutes les balises <video>
         for source in video.find_all("source"):  # Recherche toutes les sources dans <video>
-            src = source.get("src")[2:]  # Supprime le ./ du chemin de l'URL
+            src = source.get("src").lstrip("./")  # Supprime le ./ du chemin de l'URL
             if src:
                 if not regex_filter or re.search(regex_filter, src):
                     videos.append(src)  # Ajoute la vidéo à la liste
