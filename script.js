@@ -56,7 +56,7 @@ function createPreviewBubble(content) { // Fonction pour afficher une bulle de p
 
 // Fonction pour décaler une bulle par rapport à la souris
 function positionPreviewBubble(bubble, x, y) {
-    // TODO : Touver une alternative à style
+    // TODO : Touver une alternative à style pour ne pas avoir de style "inline"
     bubble.style.left = `${x + 10}px`;
     bubble.style.top = `${y + 10}px`;
 }
@@ -334,10 +334,12 @@ INITIALISATION
 document.addEventListener('DOMContentLoaded', function () {
     // Charger les données des images et vidéos
     initializeData();
+    
     // Event listeners pour les boutons
     document.getElementById('carouselButton').addEventListener('click', showCarousel);
     document.getElementById('galleryButton').addEventListener('click', showGallery);
     //console.log("Buttons are ready!");
+
     // Event listeners pour les previews
     attachImagePreviewListeners();
 });
