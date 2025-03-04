@@ -66,12 +66,15 @@ def adjust_src(path, src):
     if path.endswith("./"):
         # Garde uniquement ce qui suit le dernier '/'
         src = src.rsplit("/", 1)[-1]
-        return f"{path}{src}"    
+        return f"{path}{src}"
+    
     elif path.startswith("./") or path.startswith("/"):
         src = src.rsplit("/", 1)[-1]
-        return f"{path}/{src}"    
+        return f"{path}/{src}"
+    
     elif path.startswith("http"):
-        return f"{path}{src}"    
+        return f"{path}{src}"
+    
     else:
         src = src.rsplit("/", 1)[-1]
         return f"{path}/{src}"
