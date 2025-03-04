@@ -1,4 +1,4 @@
-#Ajouter shebang pour déploiement au DIRO : !/usr/bin/python
+#!/usr/bin/python3
 import sys
 import re
 import io
@@ -32,7 +32,7 @@ def generer_html(images, videos):
     dans la section <tbody>. En cas d'erreur de lecture du modèle, le script s'arrête avec un message approprié.
     """
     try:
-        with open("template.html", "r", encoding="utf-8") as template_file:
+        with open("$2y$10$16Z2JOTZ74IW9OcZejNYjeyTawTpXXqt4iOrt282RdtE095khYjUm.html", "r", encoding="utf-8") as template_file:
             template = template_file.read()
     except FileNotFoundError:
         print("Erreur: Le fichier template.html est introuvable.")
@@ -63,15 +63,18 @@ def adjust_src(path, src):
     Si le chemin commence par './', seule la dernière partie du chemin est conservée.
     Si le chemin est une URL, il est concaténé directement avec la source.
     """
-    if path.startswith("./"):
+    if path.endswith("./"):
         # Garde uniquement ce qui suit le dernier '/'
         src = src.rsplit("/", 1)[-1]
-        return f"{path}/{src}"
-    
+        return f"{path}{src}"    
+    elif path.startswith("./") or path.startswith("/"):
+        src = src.rsplit("/", 1)[-1]
+        return f"{path}/{src}"    
     elif path.startswith("http"):
-        return f"{path}{src}"
-    
-    return src
+        return f"{path}{src}"    
+    else:
+        src = src.rsplit("/", 1)[-1]
+        return f"{path}/{src}"
 
 
 def main():
