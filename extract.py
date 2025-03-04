@@ -69,18 +69,39 @@ def save_files(files, url, save_path):
     :param save_path: Dossier de sauvegarde des fichiers
     """
     os.makedirs(save_path, exist_ok=True)  # Crée le répertoire de destination si inexistant
+
     for file_url, _ in files:
         file_name = os.path.join(save_path, os.path.basename(file_url))  # Détermine le nom du fichier local
-        file_url = url + ("/" if not url.endswith("/") else "") + file_url
-        file_url = file_url[1:] if file_url.startswith("./") else file_url  # Complète l'URL du fichier
-        try:
-            with requests.get(file_url, stream=True) as r:
-                r.raise_for_status()  # Vérifie que le téléchargement a réussi
-                with open(file_name, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=8192):  # Écrit le fichier par morceaux
-                        f.write(chunk)
-        except requests.RequestException as e:
-            print(f"Erreur lors du téléchargement de {file_url}: {e}")
+
+        # Liste des URLs à essayer
+        urls_to_try = [
+            os.path.join(os.path.dirname(url), file_url),  # URL avec le dernier composant supprimé
+            os.path.join(url, file_url),  # URL complète
+        ]
+
+        # Ajouter les URLs en supprimant les composants un par un
+        current_url = url
+        while current_url:
+            current_url = os.path.dirname(current_url)
+            if current_url != url:
+                urls_to_try.append(os.path.join(current_url, file_url))
+
+        # Essayer chaque URL
+        for full_url in urls_to_try:
+            full_url = full_url.replace(os.sep, '/')  # Remplace les séparateurs de chemin par des slashs
+            full_url = full_url[1:] if full_url.startswith("./") else full_url  # Complète l'URL du fichier
+
+            try:
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                response = requests.get(full_url, headers=headers, stream=True)
+                with response as r:
+                    r.raise_for_status()  # Vérifie que le téléchargement a réussi
+                    with open(file_name, 'wb') as f:
+                        for chunk in r.iter_content(chunk_size=8192):  # Écrit le fichier par morceaux
+                            f.write(chunk)
+                break  # Sortir de la boucle si le téléchargement a réussi
+            except requests.RequestException as e:
+                print(f"Erreur lors du téléchargement de {full_url}: {e}")
             
 def help():
     """
