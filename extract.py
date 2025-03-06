@@ -26,7 +26,7 @@ def fetch_content(url):
         print(f"Erreur lors de la récupération de la page: {e}")
         return None
 
-def extract_images(soup, regex_filter):
+def extract_images(soup, regex_filter, exclude_svg = True):
     """
     Extrait les images d'un objet BeautifulSoup.
     
@@ -39,6 +39,9 @@ def extract_images(soup, regex_filter):
         src = img.get("src").lstrip("./")  # Supprime le ./ du chemin de l'URL
         alt = img.get("alt", "")  # Récupère le texte alternatif si présent
         if src:
+            # Exclure les .svg si demandé
+            if exclude_svg and src.lower().endswith(".svg"):
+                continue
             if not regex_filter or re.search(regex_filter, src):
                 images.append((src, alt))  # Ajoute l'image et son alt à la liste
     return images
@@ -59,6 +62,31 @@ def extract_videos(soup, regex_filter):
                 if not regex_filter or re.search(regex_filter, src):
                     videos.append(src)  # Ajoute la vidéo à la liste
     return videos
+
+def extract_svg(soup):
+    """
+    Extrait les SVG inline et ceux liés via des balises <img>.
+
+    :param soup: L'objet BeautifulSoup analysant la page HTML.
+    :return: Une liste de tuples (contenu ou chemin SVG, type: "inline" ou "img").
+    """
+    svgs = []
+
+    # SVG inline avec id ou un nom unique généré
+    for i, svg in enumerate(soup.find_all("svg")):
+        svg_content = str(svg)
+
+        # Récupération du nom : id > génération unique
+        svg_id = svg.get("id")
+        name = svg_id if svg_id else f"inline{i}"
+
+        svgs.append((svg_content, name))
+
+    # SVG via <img> (en réutilisant l'approche du regex)
+    for img in extract_images(soup, ".svg", False):
+        svgs.append(img)
+
+    return svgs
 
 def save_files(files, url, save_path):
     """
@@ -102,16 +130,59 @@ def save_files(files, url, save_path):
                 break  # Sortir de la boucle si le téléchargement a réussi
             except requests.RequestException as e:
                 print(f"Erreur lors du téléchargement de {full_url}: {e}")
+                
+def ensure_svg_namespace(svg_content):
+    """
+    Vérifie et ajoute l'attribut xmlns à l'élément SVG si nécessaire.
+
+    :param svg_content: Contenu SVG sous forme de chaîne.
+    :return: Contenu SVG modifié avec l'attribut xmlns ajouté si nécessaire.
+    """
+    soup = BeautifulSoup(svg_content, "html.parser")
+    svg_tag = soup.find("svg")
+
+    if svg_tag and 'xmlns' not in svg_tag.attrs:
+        svg_tag.attrs['xmlns'] = "http://www.w3.org/2000/svg"
+
+    return str(soup)                
+
+def save_svg(svg_list, url, save_path):
+    """
+    Télécharge et enregistre les fichiers SVG ou extrait les SVG inline.
+    
+    :param svg_list: Liste des SVG (URL de fichiers ou code inline)
+    :param url: URL de la page d'origine
+    :param save_path: Dossier de sauvegarde des fichiers
+    """
+    os.makedirs(save_path, exist_ok=True)  # Crée le dossier si inexistant
+
+    for svg, index in svg_list:
+        if svg.startswith("<svg"):  # SVG inline détecté
+            try:
+                soup = BeautifulSoup(svg, "html.parser")
+                svg_content = ensure_svg_namespace(soup.prettify())  # Nettoie le SVG
+                
+                file_name = os.path.join(save_path, f"{index}.svg")
+                with open(file_name, "w", encoding="utf-8") as f:
+                    f.write(svg_content)
+                print(f"SVG {file_name} \"Inline\"")
+            except Exception as e:
+                print(f"Erreur lors de l'enregistrement du SVG inline : {e}")
+
+        elif svg.endswith(".svg"):  # Fichier SVG externe
+            # Appel de la fonction save_files pour les SVG externes
+            save_files([(svg, None)], url, save_path)
             
 def help():
     """
     Affiche le message d'aide pour l'utilisation du script.
     """
-    print("Usage: extract [-r <regex>] [-i] [-v] [-p <path>] <url>\n")
+    print("Usage: extract [-r <regex>] [-i] [-v] [-s] [-p <path>] <url>\n")
     print("Options:")
     print("  -r <regex>  Filtrer les ressources par une expression régulière sur leur nom")
     print("  -i          Exclure les éléments <img> de la liste")
     print("  -v          Exclure les éléments <video> de la liste")
+    print("  -s          Exclure les éléments <svg> et .svg de la liste")
     print("  -p <path>   Copier les ressources img et/ou vidéo dans <path>")
     print("  -h          Afficher ce message d'aide et quitter\n")
     print("Auteurs: Yanis Boulogne - Karl-Antoine Plouffe")
@@ -135,6 +206,7 @@ def main():
     save_path = None
     no_images = False
     no_videos = False
+    no_svg = False
     
     # Analyse des arguments passés au script
     i = 0
@@ -149,6 +221,8 @@ def main():
             no_images = True  # Désactive l'extraction des images
         elif args[i] == "-v":
             no_videos = True  # Désactive l'extraction des vidéos
+        elif args[i] == "-s":
+            no_svg = True  # Désactive l'extraction des SVGs
         else:
             if url is None:
                 url = args[i]  # Récupère l'URL fournie
@@ -186,6 +260,15 @@ def main():
             print(f"VIDEO {src}")
         if save_path:
             save_files(videos, url, save_path)
+            
+    # Extraction des svg si activé
+    if not no_svg:
+        svg = extract_svg(soup)
+        for src, alt in svg:
+            if not save_path or (save_path and src.endswith(".svg")):
+                print(f"SVG {src} \"{alt}\"")            
+        if save_path:
+                save_svg(svg, url, save_path)                    
 
 
 if __name__ == "__main__":

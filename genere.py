@@ -20,7 +20,7 @@ def help():
     print("Auteurs: Yanis Boulogne - Karl-Antoine Plouffe")
     sys.exit(0)
 
-def generer_html(images, videos):
+def generer_html(images, videos, svgs):
     """
     Génère le contenu HTML en insérant les ressources images et vidéos dans un modèle existant.
 
@@ -46,7 +46,11 @@ def generer_html(images, videos):
 
     for src in videos:
         ressources_html += f"<tr><td>{src}</td><td>Video</td></tr>\n"
+        
+    for src, alt in svgs:
+        ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
 
+    # return ressources_html
     # Remplacement du contenu de <tbody> par les ressources
     template = re.sub(r'(<tbody>.*?</tbody>)', f"<tbody>{ressources_html}</tbody>", template, flags=re.S)
 
@@ -63,6 +67,9 @@ def adjust_src(path, src):
     Si le chemin commence par './', seule la dernière partie du chemin est conservée.
     Si le chemin est une URL, il est concaténé directement avec la source.
     """
+    path = path.replace("\\", "/")
+    src = src.replace("\\", "/")
+    
     if path.endswith("./"):
         # Garde uniquement ce qui suit le dernier '/'
         src = src.rsplit("/", 1)[-1]
@@ -76,7 +83,7 @@ def adjust_src(path, src):
         return f"{path}{src}"
     
     else:
-        src = src.rsplit("/", 1)[-1]
+        src = src.rsplit("\\", 1)[-1]
         return f"{path}/{src}"
 
 
@@ -94,6 +101,7 @@ def main():
 
     images = []
     videos = []
+    svgs = []
     path = ""
 
     # Lecture de l'entrée standard
@@ -117,8 +125,17 @@ def main():
                 _, src = parts
                 adjusted_src = adjust_src(path, src)
                 videos.append(adjusted_src)
+                
+        elif line.startswith("SVG"):
+            parts = line.split(" ", 2)
+            if len(parts) == 3:
+                _, src, alt = parts
+                adjusted_src = adjust_src(path, src)
+                svgs.append((adjusted_src, alt.strip('"')))
+                
+    # print(line)
 
-    html_content = generer_html(images, videos)
+    html_content = generer_html(images, videos, svgs)
 
     print(html_content.encode('utf-8').decode('utf-8'))
 
