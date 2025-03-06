@@ -65,10 +65,10 @@ def extract_videos(soup, regex_filter):
 
 def extract_svg(soup):
     """
-    Extrait les SVG inline et ceux liés via des balises <img>.
+    Extrait les SVG inline et ceux liés via des balises <img>
 
-    :param soup: L'objet BeautifulSoup analysant la page HTML.
-    :return: Une liste de tuples (contenu ou chemin SVG, type: "inline" ou "img").
+    :param soup: L'objet BeautifulSoup analysant la page HTML
+    :return: Une liste de tuples
     """
     svgs = []
 
@@ -98,36 +98,48 @@ def save_files(files, url, save_path):
     """
     os.makedirs(save_path, exist_ok=True)  # Crée le répertoire de destination si inexistant
 
+    def join_url(base, path):
+        """Concatène un chemin à une URL en gérant les séparateurs."""
+        if not base.endswith('/'):
+            base += '/'
+        return base + path.lstrip('/')
+
+    def get_root_url(url):
+        """Extrait la racine d'une URL (ex: http://site.fr)."""
+        parts = url.split('/')
+        return f"{parts[0]}//{parts[2]}"
+
     for file_url, _ in files:
-        file_name = os.path.join(save_path, os.path.basename(file_url))  # Détermine le nom du fichier local
+        file_name = os.path.join(save_path, os.path.basename(file_url))
 
-        # Liste des URLs à essayer
-        urls_to_try = [
-            os.path.join(os.path.dirname(url), file_url),  # URL avec le dernier composant supprimé
-            os.path.join(url, file_url),  # URL complète
-        ]
+        # 1. Explorer en ajoutant des niveaux (vers le bas)
+        urls_to_try = []
+        root_url = get_root_url(url)
 
-        # Ajouter les URLs en supprimant les composants un par un
-        current_url = url
-        while current_url:
-            current_url = os.path.dirname(current_url)
-            if current_url != url:
-                urls_to_try.append(os.path.join(current_url, file_url))
+        # Récupérer la partie après le domaine
+        path_after_root = url[len(root_url):].strip('/')
 
-        # Essayer chaque URL
+        # Construire les sous-dossiers progressivement
+        sub_paths = path_after_root.split('/')
+        current_path = root_url
+
+        for folder in sub_paths:
+            current_path = join_url(current_path, folder)
+            urls_to_try.append(join_url(current_path, file_url))
+
+        # 2. Essayer l'URL directe en dernier
+        urls_to_try.append(join_url(url, file_url))
+
+        # Télécharger le fichier
         for full_url in urls_to_try:
-            full_url = full_url.replace(os.sep, '/')  # Remplace les séparateurs de chemin par des slashs
-            full_url = full_url[1:] if full_url.startswith("./") else full_url  # Complète l'URL du fichier
-
             try:
                 headers = {'User-Agent': 'Mozilla/5.0'}
                 response = requests.get(full_url, headers=headers, stream=True)
-                with response as r:
-                    r.raise_for_status()  # Vérifie que le téléchargement a réussi
+                if response.status_code == 200:
                     with open(file_name, 'wb') as f:
-                        for chunk in r.iter_content(chunk_size=8192):  # Écrit le fichier par morceaux
+                        for chunk in response.iter_content(chunk_size=8192):
                             f.write(chunk)
-                break  # Sortir de la boucle si le téléchargement a réussi
+                    break
             except requests.RequestException as e:
                 print(f"Erreur lors du téléchargement de {full_url}: {e}")
                 

@@ -41,16 +41,13 @@ def generer_html(images, videos, svgs):
     ressources_html = ""
     ressources_html += f"<tr class=\"d-none\"></tr>\n"
 
-    for src, alt in images:
-        ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
+    for collection in (images, svgs):
+        for src, alt in collection:
+            ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
 
     for src in videos:
         ressources_html += f"<tr><td>{src}</td><td>Video</td></tr>\n"
-        
-    for src, alt in svgs:
-        ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
 
-    # return ressources_html
     # Remplacement du contenu de <tbody> par les ressources
     template = re.sub(r'(<tbody>.*?</tbody>)', f"<tbody>{ressources_html}</tbody>", template, flags=re.S)
 
@@ -67,24 +64,29 @@ def adjust_src(path, src):
     Si le chemin commence par './', seule la dernière partie du chemin est conservée.
     Si le chemin est une URL, il est concaténé directement avec la source.
     """
+    # Normaliser les séparateurs
     path = path.replace("\\", "/")
     src = src.replace("\\", "/")
-    
+
+    # Si path finit par './', on ne garde que le nom de fichier
     if path.endswith("./"):
-        # Garde uniquement ce qui suit le dernier '/'
         src = src.rsplit("/", 1)[-1]
         return f"{path}{src}"
     
+    # Si path commence par './' ou '/', on concatène correctement
     elif path.startswith("./") or path.startswith("/"):
         src = src.rsplit("/", 1)[-1]
-        return f"{path}/{src}"
+        return f"{path.rstrip('/')}/{src}"
     
+    # Si path est une URL (http ou https)
     elif path.startswith("http"):
-        return f"{path}{src}"
+        src = src.rsplit("/", 1)[-1]
+        return f"{path.rstrip('/')}/{src}"
     
+    # Cas général
     else:
-        src = src.rsplit("\\", 1)[-1]
-        return f"{path}/{src}"
+        src = src.rsplit("/", 1)[-1]
+        return f"{path.rstrip('/')}/{src}"
 
 
 def main():
@@ -132,8 +134,6 @@ def main():
                 _, src, alt = parts
                 adjusted_src = adjust_src(path, src)
                 svgs.append((adjusted_src, alt.strip('"')))
-                
-    # print(line)
 
     html_content = generer_html(images, videos, svgs)
 
