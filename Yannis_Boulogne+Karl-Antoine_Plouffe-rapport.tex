@@ -1,0 +1,49 @@
+\documentclass{article}
+
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts}            %For \leadsto
+\usepackage{amsmath}             %For \text
+\usepackage{fancybox}            %For \ovalbox
+\usepackage{hyperref}
+\usepackage{color}
+
+\DeclareUnicodeCharacter{03BB}{\ensuremath{{\color{black}{\lambda}}}}
+
+\title{Projet \#1}
+\author{IFT-3225}
+
+\begin{document}
+
+\maketitle
+
+\newcommand \mML {\ensuremath\mu\textsl{ML}}
+\newcommand \kw [1] {\textsf{#1}}
+\newcommand \id [1] {\textsl{#1}}
+\newcommand \punc [1] {\kw{`#1'}}
+\newcommand \str [1] {\texttt{"#1"}}
+\newenvironment{outitemize}{
+  \begin{itemize}
+  \let \origitem \item \def \item {\origitem[]\hspace{-18pt}}
+}{
+  \end{itemize}
+}
+\newcommand \Align [2][t] {\begin{array}[#1]{@{}l} #2 \end{array}}
+
+\section{Répartition des tâches}
+
+\section{Pages générées}
+
+\section{Langages et librairies utilisés}
+\begin{itemize}
+  \item ...
+  \item ...
+  \item ...
+  \item ...
+  \item ...
+\end{itemize}
+
+\section{Traitements particuliers}
+
+\end{document}
