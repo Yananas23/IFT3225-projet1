@@ -43,8 +43,8 @@
         Yannis Boulogne & Karl-Antoine Plouffe \\
         \hline
         \begin{itemize} 
-            \item ...
-            \item ...
+            \item Créer le module Python pour extraire les images, les vidéos et les svg
+            \item Créer le module Python pour générer la page web en intégrant les médias précédemment extraits
         \end{itemize} & 
         \begin{itemize} 
             \item Création du gabarit HTML
@@ -71,16 +71,39 @@ Pas super clair? Nos pages générées?
   \item Bash
   \item JavaScript
   \item Python 3
-  \item ...
 \end{itemize}
-\subsection{librairies}
+\subsection{Librairies}
 \begin{itemize}  
   \item Bootstrap 5.3.3
-  \item ...
+  \item BeautifulSoup 4
+  \item sys
+  \item os
+  \item re
+  \item requests
+  \item io
 \end{itemize}
 
 \section{Traitements particuliers}
+
+\subsection{Images}
+Pour la sauvegarde d’image, nous partons de la racine de l’url (exemple: https://monsite.fr/), 
+pour remonter au fur et à mesure en ajoutant les sous-dossiers présents dans l’url de base et on s’arrête quand on a trouvé l’image ou atteint l’url fourni par l’utilisateur.
+Cette vérification peut prendre relativeemnt beaucoup de temps, mais elle permet de maximiser les chances de récupérer l’image.
+
 \subsection{SVG}
+Il en existe 2 type:
+\begin{itemize}  
+  \item Les images .svg
+  \item Les images "\textit{inline}" entre balises <svg> directement intégrées dans le HTML
+\end{itemize}
+On a ajouté l’option -s pour les retirer de l’extraction du site. Des fonction ont été créées juste pour ce type d'image. 
+Si c’est une image .svg, les fonctions dédiées font simplement appel à celles déjà existantes pour les autres types d’image. 
+Si c’est un ajout \textit{inline}, il y a deux posibilités:
+\begin{itemize}  
+  \item Extraire sans sauvegarder: on récupère le contenue entre les deux balises <svg> et lui donne un nom basé sur l’id si il existe sinon on l’appelle inline{i}.
+  \item Sauvegarder les inlines: on vérifie d’abord leur conformiter avant de les transformer en .svg qui seront géré par genere comme une image classique avec comme nom le même fonctionnement que si on ne les sauvegarder pas.
+\end{itemize}
+Du côté de \textit{genere}, les images svg sont traitées comme les autres types d'image.
 
 \subsection{Gabarit}
 Nous tenons à mentionner l'utilisation d'un gabarit HTML pour simplifier la génération des pages avec la commande \textit{genere} réalisée en Python.
@@ -88,5 +111,6 @@ Nous avons jugé plus élégant de copier le gabarit, d'y insérer les ressource
 Cela nous évite d'avoir à importer une librairie additionnelle pour générer élégamment du code HTML avec Python.
 
 \subsection{\textit{Wrappers}}
+Pour lancer avec aisance les commandes tel que demandé, nous avons ajouté des scripts \textit{wrappers} en Bash qui lancent à leur tour les fichiers Python.
 
 \end{document}
