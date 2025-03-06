@@ -6,8 +6,10 @@
 \usepackage{amsfonts}            %For \leadsto
 \usepackage{amsmath}             %For \text
 \usepackage{fancybox}            %For \ovalbox
-\usepackage{hyperref}
 \usepackage{color}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{hyperref}
 
 \DeclareUnicodeCharacter{03BB}{\ensuremath{{\color{black}{\lambda}}}}
 
@@ -32,18 +34,59 @@
 \newcommand \Align [2][t] {\begin{array}[#1]{@{}l} #2 \end{array}}
 
 \section{Répartition des tâches}
+\bgroup
+\begin{table}[htbp]
+\centering
+    \setlength{\leftmargini}{0.5cm}
+    \begin{tabular}{| m{5cm} | m{5cm} |}
+        \hline
+        Yannis Boulogne & Karl-Antoine Plouffe \\
+        \hline
+        \begin{itemize} 
+            \item ...
+            \item ...
+        \end{itemize} & 
+        \begin{itemize} 
+            \item Création du gabarit HTML
+            \item Implémentation de styles avec Bootstrap
+            \item Création des scripts "\textit{wrapper}"
+            \item Tests d'exécution des commandes
+            \item Rédaction du rapport
+        \end{itemize} \\
+        \hline
+    \end{tabular}
+\end{table}
+\egroup
 
 \section{Pages générées}
-
-\section{Langages et librairies utilisés}
+Pas super clair? Nos pages générées?
 \begin{itemize}
+  \item \url{url1a} \qquad Page abritée au DIRO : \url{url1b}
+  \item \url{url2a} \qquad Page abritée au DIRO : \url{url2b}
+  \item \url{url3a} \qquad Page abritée au DIRO : \url{url3b}
+\end{itemize}
+\section{Langages et librairies utilisés}
+\subsection{Langages}
+\begin{itemize}
+  \item Bash
+  \item JavaScript
+  \item Python 3
   \item ...
-  \item ...
-  \item ...
-  \item ...
+\end{itemize}
+\subsection{librairies}
+\begin{itemize}  
+  \item Bootstrap 5.3.3
   \item ...
 \end{itemize}
 
 \section{Traitements particuliers}
+\subsection{SVG}
+
+\subsection{Gabarit}
+Nous tenons à mentionner l'utilisation d'un gabarit HTML pour simplifier la génération des pages avec la commande \textit{genere} réalisée en Python.
+Nous avons jugé plus élégant de copier le gabarit, d'y insérer les ressources récoltées par \textit{extract} et d'en générer une nouvelle page HTML plutôt que d'avoir le gabarit de la page entreposé dans une énorme chaîne de caractères.
+Cela nous évite d'avoir à importer une librairie additionnelle pour générer élégamment du code HTML avec Python.
+
+\subsection{\textit{Wrappers}}
 
 \end{document}
