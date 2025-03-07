@@ -44,6 +44,9 @@ def extract_images(soup, regex_filter, exclude_svg = True):
             # Exclure les .svg si demandé
             if exclude_svg and src.lower().endswith(".svg"):
                 continue
+            
+            if src.startswith("http") and not no_http:
+                continue
 
             # Vérifier l'unicité de la source
             if src in seen_sources:
@@ -69,6 +72,9 @@ def extract_videos(soup, regex_filter):
         for source in video.find_all("source"):  # Recherche toutes les sources dans <video>
             src = source.get("src").lstrip("./")  # Supprime le ./ du chemin de l'URL
             if src:
+                if src.startswith("http") and not no_http:
+                    continue
+                
                 # Vérifier l'unicité de la source
                 if src in seen_sources:
                     continue
@@ -111,6 +117,14 @@ def extract_svg(soup):
     return svgs
 
 def http_url(file_url, alt, save_path):
+    """
+    Gère l'URL d'un fichier multimédia (image, vidéo ou SVG) et génère un chemin de sauvegarde.
+
+    :param file_url: L'URL du fichier.
+    :param alt: Le texte alternatif utilisé pour générer le nom du fichier.
+    :param save_path: Le chemin du dossier où enregistrer le fichier.
+    :return: L'URL du fichier.
+    """
     name = alt.replace("/", "-").replace(" - ", "-").replace(" ", "_")
 
     # Incrémentation automatique de i si nécessaire
@@ -166,7 +180,7 @@ def save_files(files, url, save_path):
         
         urls_to_try = []
         
-        if file_url.startswith("http"):
+        if file_url.startswith("http") and not no_http:
             urls_to_try.append(http_url(file_url, alt, save_path))
             
         else:
@@ -248,12 +262,13 @@ def help():
     """
     Affiche le message d'aide pour l'utilisation du script.
     """
-    print("Usage: extract [-r <regex>] [-i] [-v] [-s] [-p <path>] <url>\n")
+    print("Usage: extract [-r <regex>] [-i] [-v] [-s] [-h] [-p <path>] <url>\n")
     print("Options:")
     print("  -r <regex>  Filtrer les ressources par une expression régulière sur leur nom")
     print("  -i          Exclure les éléments <img> de la liste")
     print("  -v          Exclure les éléments <video> de la liste")
     print("  -s          Exclure les éléments <svg> et .svg de la liste")
+    print("  -u          Exclure les URLs commencant par `http` de toute les listes")
     print("  -p <path>   Copier les ressources img et/ou vidéo dans <path>")
     print("  -h          Afficher ce message d'aide et quitter\n")
     print("Auteurs: Yanis Boulogne - Karl-Antoine Plouffe")
@@ -272,15 +287,18 @@ def main():
         return
 
     # Initialisation des variables
-    url = None
     global images, videos, svg
-    images, videos, svg = [], [], []
     global regex_filter 
+    global no_http
+    
+    url = None
+    images, videos, svg = [], [], []
     regex_filter = None
     save_path = None
     no_images = False
     no_videos = False
     no_svg = False
+    no_http = False
     
     # Analyse des arguments passés au script
     i = 0
@@ -297,6 +315,8 @@ def main():
             no_videos = True  # Désactive l'extraction des vidéos
         elif args[i] == "-s":
             no_svg = True  # Désactive l'extraction des SVGs
+        elif args[i] == "-u":
+            no_http = True  # Désactive l'extraction des URLs `http`
         else:
             if url is None:
                 url = args[i]  # Récupère l'URL fournie
