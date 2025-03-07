@@ -87,9 +87,15 @@
 
 \subsection{Images}
 Pour la sauvegarde d’image, nous partons de la racine de l’url (exemple: https://monsite.fr/), 
-pour remonter au fur et à mesure en ajoutant les sous-dossiers présents dans l’url de base et on s’arrête quand on a trouvé l’image ou atteint l’url fourni par l’utilisateur.
-Cette vérification peut prendre relativeemnt beaucoup de temps, mais elle permet de maximiser les chances de récupérer l’image.
+pour remonter au fur et à mesure en ajoutant les sous-dossiers présents dans l’url de base et on s’arrête quand on a trouvé l’image ou atteint l’url fourni par l’utilisateur. 
+Cette vérification peut prendre relativement beaucoup de temps, mais elle permet de maximiser les chances de récupérer l’image.
 
+\subsection{Images externes}
+Il est possible de télécharger les images externes affichées sur une page web, 
+c'est-à-dire les images hébergées sur une page autre que la page visée, mais affichées sur cellec-ci.
+On a donc ajouté l'option -u pour éviter de télécharger ces images.
+Une extension est ajoutée à ces images si elle n'en n'ont pas déjà, un cas rare que nous avons encontré lors de nos tests.
+ 
 \subsection{SVG}
 Il en existe 2 type:
 \begin{itemize}  
