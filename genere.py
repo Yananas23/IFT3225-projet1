@@ -41,12 +41,14 @@ def generer_html(images, videos, svgs):
     ressources_html = ""
     ressources_html += f"<tr class=\"d-none\"></tr>\n"
 
-    for collection in (images, svgs):
-        for src, alt in collection:
-            ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
+    for src, alt in images:
+        ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
 
-    for src in videos:
-        ressources_html += f"<tr><td>{src}</td><td>Video</td></tr>\n"
+    for src, extension in videos:
+        ressources_html += f"<tr><td>{src}</td><td>{extension}</td></tr>\n"
+    
+    for src, alt in svgs:
+        ressources_html += f"<tr><td>{src}</td><td>{alt}</td></tr>\n"
 
     # Remplacement du contenu de <tbody> par les ressources
     template = re.sub(r'(<tbody>.*?</tbody>)', f"<tbody>{ressources_html}</tbody>", template, flags=re.S)
@@ -122,11 +124,11 @@ def main():
                 images.append((adjusted_src, alt.strip('"')))
 
         elif line.startswith("VIDEO"):
-            parts = line.split(" ", 1)
-            if len(parts) == 2:
-                _, src = parts
+            parts = line.split(" ", 2)
+            if len(parts) == 3:
+                _, src, extension = parts
                 adjusted_src = adjust_src(path, src)
-                videos.append(adjusted_src)
+                videos.append((adjusted_src, extension))
                 
         elif line.startswith("SVG"):
             parts = line.split(" ", 2)

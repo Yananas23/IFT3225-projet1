@@ -35,6 +35,8 @@ def extract_images(soup, regex_filter, exclude_svg = True):
     :return: Une liste de tuples contenant le chemin de l'image et son attribut alt
     """
     images = []
+    seen_sources = set()
+    
     for img in soup.find_all("img"):  # Recherche toutes les balises <img>
         src = img.get("src").lstrip("./")  # Supprime le ./ du chemin de l'URL
         alt = img.get("alt", "")  # Récupère le texte alternatif si présent
@@ -42,8 +44,14 @@ def extract_images(soup, regex_filter, exclude_svg = True):
             # Exclure les .svg si demandé
             if exclude_svg and src.lower().endswith(".svg"):
                 continue
+
+            # Vérifier l'unicité de la source
+            if src in seen_sources:
+                continue
+            
             if not regex_filter or re.search(regex_filter, src):
                 images.append((src, alt))  # Ajoute l'image et son alt à la liste
+                seen_sources.add(src)  # Enregistre la source comme vue
     return images
 
 def extract_videos(soup, regex_filter):
@@ -55,12 +63,20 @@ def extract_videos(soup, regex_filter):
     :return: Une liste des sources des vidéos
     """
     videos = []
+    seen_sources = set()
+    
     for video in soup.find_all("video"):  # Recherche toutes les balises <video>
         for source in video.find_all("source"):  # Recherche toutes les sources dans <video>
             src = source.get("src").lstrip("./")  # Supprime le ./ du chemin de l'URL
             if src:
+                # Vérifier l'unicité de la source
+                if src in seen_sources:
+                    continue
+                
                 if not regex_filter or re.search(regex_filter, src):
-                    videos.append(src)  # Ajoute la vidéo à la liste
+                    extension = os.path.splitext(src)[1]
+                    videos.append((src, extension))  # Ajoute la vidéo à la liste
+                    seen_sources.add(src)  # Enregistre la source comme vue
     return videos
 
 def extract_svg(soup):
@@ -71,16 +87,22 @@ def extract_svg(soup):
     :return: Une liste de tuples
     """
     svgs = []
+    seen_sources = set()
 
     # SVG inline avec id ou un nom unique généré
     for i, svg in enumerate(soup.find_all("svg")):
         svg_content = str(svg)
+        svg_content = re.sub(r"\s+", " ", svg_content.strip())
 
+        if svg_content in seen_sources:
+            continue
+        
         # Récupération du nom : id > génération unique
-        svg_id = svg.get("id")
-        name = svg_id if svg_id else f"inline{i}"
+        name = svg.get("id") or svg.get("aria-label") or f"inline{i}"
+        name = name.replace("/", "-").replace(" - ", "-").replace(" ", "_")
 
         svgs.append((svg_content, name))
+        seen_sources.add(svg_content)  # Enregistre la source comme vue
 
     # SVG via <img> (en réutilisant l'approche du regex)
     for img in extract_images(soup, ".svg", False):
@@ -107,28 +129,37 @@ def save_files(files, url, save_path):
     def get_root_url(url):
         """Extrait la racine d'une URL (ex: http://site.fr)."""
         parts = url.split('/')
-        return f"{parts[0]}//{parts[2]}"
+        return f"{parts[0]}//{parts[1]}"
 
-    for file_url, _ in files:
-        file_name = os.path.join(save_path, os.path.basename(file_url))
-
-        # 1. Explorer en ajoutant des niveaux (vers le bas)
+    for file_url, alt in files:
+        
         urls_to_try = []
-        root_url = get_root_url(url)
+        
+        if file_url.startswith("http"):
+            name = alt.replace("/", "-").replace(" - ", "-").replace(" ", "_")
+            file_name = os.path.join(save_path, f"{os.path.splitext(name)[0]}{os.path.splitext(file_url)[1]}" if name else os.path.basename(file_url))
+            urls_to_try.append(file_url)
+            if file_name.endswith(".svg"):
+                print(f"SVG {file_name} \"{alt}\"") 
+        else:
+            file_name = os.path.join(save_path, os.path.basename(file_url))
+            
+            # 1. Explorer en ajoutant des niveaux (vers le bas)
+            root_url = get_root_url(url)
 
-        # Récupérer la partie après le domaine
-        path_after_root = url[len(root_url):].strip('/')
+            # Récupérer la partie après le domaine
+            path_after_root = url[len(root_url):].strip('/')
 
-        # Construire les sous-dossiers progressivement
-        sub_paths = path_after_root.split('/')
-        current_path = root_url
+            # Construire les sous-dossiers progressivement
+            sub_paths = path_after_root.split('/')
+            current_path = root_url
 
-        for folder in sub_paths:
-            current_path = join_url(current_path, folder)
-            urls_to_try.append(join_url(current_path, file_url))
+            for folder in sub_paths:
+                current_path = join_url(current_path, folder)
+                urls_to_try.append(join_url(current_path, file_url))
 
-        # 2. Essayer l'URL directe en dernier
-        urls_to_try.append(join_url(url, file_url))
+            # 2. Essayer l'URL directe en dernier
+            urls_to_try.append(join_url(url, file_url))
 
         # Télécharger le fichier
         for full_url in urls_to_try:
@@ -183,7 +214,7 @@ def save_svg(svg_list, url, save_path):
 
         elif svg.endswith(".svg"):  # Fichier SVG externe
             # Appel de la fonction save_files pour les SVG externes
-            save_files([(svg, None)], url, save_path)
+            save_files([(svg, index)], url, save_path)
             
 def help():
     """
@@ -268,8 +299,8 @@ def main():
     # Extraction des vidéos si activé
     if not no_videos:
         videos = extract_videos(soup, regex_filter)
-        for src in videos:
-            print(f"VIDEO {src}")
+        for src, extension in videos:
+            print(f"VIDEO {src} \"{extension}\"")
         if save_path:
             save_files(videos, url, save_path)
             
@@ -277,7 +308,7 @@ def main():
     if not no_svg:
         svg = extract_svg(soup)
         for src, alt in svg:
-            if not save_path or (save_path and src.endswith(".svg")):
+            if not save_path and not src.startswith("http"):
                 print(f"SVG {src} \"{alt}\"")            
         if save_path:
                 save_svg(svg, url, save_path)                    
