@@ -1,2 +1,2 @@
-#!/bin/bash
-python3 ./genere.py "$@"
+#!/bin/tcsh
+python3 ./genere.py "$argv"
