@@ -110,6 +110,37 @@ def extract_svg(soup):
 
     return svgs
 
+def http_url(file_url, alt, save_path):
+    name = alt.replace("/", "-").replace(" - ", "-").replace(" ", "_")
+
+    # Incrémentation automatique de i si nécessaire
+    if not name:
+        i = locals().get('i', 0) + 1
+        name = f"image{i}"
+
+    file_name = os.path.join(save_path, f"{os.path.splitext(name)[0]}{os.path.splitext(file_url)[1]}")
+
+    # Vérifie si c'est un SVG
+    if svg and any(file_url == item[0] for item in svg):
+        if not os.path.splitext(file_name)[1]:
+            file_name += ".svg"
+        print(f"SVG {file_name} \"{alt}\"")
+
+    # Vérifie si c'est une Image
+    elif images and any(file_url == item[0] for item in images):
+        if not os.path.splitext(file_name)[1]:
+            file_name += ".jpg"
+        print(f"IMAGE {file_name} \"{alt}\"")
+
+    # Vérifie si c'est une Vidéo
+    elif videos and any(file_url == item[0] for item in videos):
+        if not os.path.splitext(file_name)[1]:
+            file_name += ".mp4"
+        print(f"VIDEO {file_name} \"{alt}\"")
+        
+    return file_url
+    
+
 def save_files(files, url, save_path):
     """
     Télécharge et enregistre les fichiers extraits (images ou vidéos).
@@ -136,11 +167,8 @@ def save_files(files, url, save_path):
         urls_to_try = []
         
         if file_url.startswith("http"):
-            name = alt.replace("/", "-").replace(" - ", "-").replace(" ", "_")
-            file_name = os.path.join(save_path, f"{os.path.splitext(name)[0]}{os.path.splitext(file_url)[1]}" if name else os.path.basename(file_url))
-            urls_to_try.append(file_url)
-            if file_name.endswith(".svg"):
-                print(f"SVG {file_name} \"{alt}\"") 
+            urls_to_try.append(http_url(file_url, alt, save_path))
+            
         else:
             file_name = os.path.join(save_path, os.path.basename(file_url))
             
@@ -245,6 +273,9 @@ def main():
 
     # Initialisation des variables
     url = None
+    global images, videos, svg
+    images, videos, svg = [], [], []
+    global regex_filter 
     regex_filter = None
     save_path = None
     no_images = False
@@ -292,7 +323,8 @@ def main():
     if not no_images:
         images = extract_images(soup, regex_filter)
         for src, alt in images:
-            print(f"IMAGE {src} \"{alt}\"")
+            if not save_path or (save_path and not src.startswith("http")):
+                print(f"IMAGE {src} \"{alt}\"")
         if save_path:
             save_files(images, url, save_path)
     
@@ -300,7 +332,8 @@ def main():
     if not no_videos:
         videos = extract_videos(soup, regex_filter)
         for src, extension in videos:
-            print(f"VIDEO {src} \"{extension}\"")
+            if not save_path or (save_path and not src.startswith("http")):
+                print(f"VIDEO {src} \"{extension}\"")
         if save_path:
             save_files(videos, url, save_path)
             
@@ -308,7 +341,7 @@ def main():
     if not no_svg:
         svg = extract_svg(soup)
         for src, alt in svg:
-            if not save_path and not src.startswith("http"):
+            if not save_path or (save_path and not src.startswith("http")):
                 print(f"SVG {src} \"{alt}\"")            
         if save_path:
                 save_svg(svg, url, save_path)                    
