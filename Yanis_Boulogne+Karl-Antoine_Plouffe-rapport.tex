@@ -1,0 +1,122 @@
+\documentclass{article}
+
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts}            %For \leadsto
+\usepackage{amsmath}             %For \text
+\usepackage{fancybox}            %For \ovalbox
+\usepackage{color}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{hyperref}
+
+\DeclareUnicodeCharacter{03BB}{\ensuremath{{\color{black}{\lambda}}}}
+
+\title{Projet \#1}
+\author{IFT-3225}
+
+\begin{document}
+
+\maketitle
+
+\newcommand \mML {\ensuremath\mu\textsl{ML}}
+\newcommand \kw [1] {\textsf{#1}}
+\newcommand \id [1] {\textsl{#1}}
+\newcommand \punc [1] {\kw{`#1'}}
+\newcommand \str [1] {\texttt{"#1"}}
+\newenvironment{outitemize}{
+  \begin{itemize}
+  \let \origitem \item \def \item {\origitem[]\hspace{-18pt}}
+}{
+  \end{itemize}
+}
+\newcommand \Align [2][t] {\begin{array}[#1]{@{}l} #2 \end{array}}
+
+\section{Répartition des tâches}
+\bgroup
+\begin{table}[htbp]
+\centering
+    \setlength{\leftmargini}{0.5cm}
+    \begin{tabular}{| m{5cm} | m{5cm} |}
+        \hline
+        Yannis Boulogne & Karl-Antoine Plouffe \\
+        \hline
+        \begin{itemize} 
+            \item Créer le module Python pour extraire les images, les vidéos et les svg
+            \item Créer le module Python pour générer la page web en intégrant les médias précédemment extraits
+        \end{itemize} & 
+        \begin{itemize} 
+            \item Création du gabarit HTML
+            \item Implémentation de styles avec Bootstrap
+            \item Création des scripts "\textit{wrapper}"
+            \item Tests d'exécution des commandes
+            \item Rédaction du rapport
+        \end{itemize} \\
+        \hline
+    \end{tabular}
+\end{table}
+\egroup
+
+\section{Pages générées}
+\begin{itemize}
+  \item \url{https://www.ableton.com/en/} \qquad Page abritée au DIRO : \url{url1b}
+  \item \url{https://www.ville-dechy.fr/} \qquad Page abritée au DIRO : \url{url2b}
+  \item \url{https://montreal.ca/calendrier-culturel} \qquad Page abritée au DIRO : \url{url3b}
+\end{itemize}
+\section{Langages et librairies utilisés}
+\subsection{Langages}
+\begin{itemize}
+  \item JavaScript
+  \item Python 3
+  \item TCSH
+\end{itemize}
+\newpage
+\subsection{Librairies}
+\begin{itemize}  
+  \item Bootstrap 5.3.3
+  \item BeautifulSoup 4
+  \item sys
+  \item os
+  \item re
+  \item requests
+  \item io
+\end{itemize}
+
+\section{Traitements particuliers}
+
+\subsection{Images}
+Pour la sauvegarde d’image, nous partons de la racine de l’url (exemple: https://monsite.fr/), 
+pour remonter au fur et à mesure en ajoutant les sous-dossiers présents dans l’url de base et on s’arrête quand on a trouvé l’image ou atteint l’url fourni par l’utilisateur. 
+Cette vérification peut prendre relativement beaucoup de temps, mais elle permet de maximiser les chances de récupérer l’image.
+
+\subsection{Images externes}
+Il est possible de télécharger les images externes affichées sur une page web, 
+c'est-à-dire les images hébergées sur une page autre que la page visée, mais affichées sur cellec-ci.
+On a donc ajouté l'option -u pour éviter de télécharger ces images.
+Une extension est ajoutée à ces images si elle n'en n'ont pas déjà, un cas rare que nous avons encontré lors de nos tests.
+ 
+\subsection{SVG}
+Il en existe 2 type:
+\begin{itemize}  
+  \item Les images .svg
+  \item Les images "\textit{inline}" entre balises <svg> directement intégrées dans le HTML
+\end{itemize}
+On a ajouté l’option -s pour les retirer de l’extraction du site. Des fonction ont été créées juste pour ce type d'image. 
+Si c’est une image .svg, les fonctions dédiées font simplement appel à celles déjà existantes pour les autres types d’image. 
+Si c’est un ajout \textit{inline}, il y a deux posibilités:
+\begin{itemize}  
+  \item Extraire sans sauvegarder: on récupère le contenue entre les deux balises <svg> et lui donne un nom basé sur l’id si il existe sinon on l’appelle inline{i}.
+  \item Sauvegarder les inlines: on vérifie d’abord leur conformiter avant de les transformer en .svg qui seront géré par genere comme une image classique avec comme nom le même fonctionnement que si on ne les sauvegarder pas.
+\end{itemize}
+Du côté de \textit{genere}, les images svg sont traitées comme les autres types d'image.
+
+\subsection{Gabarit}
+Nous tenons à mentionner l'utilisation d'un gabarit HTML pour simplifier la génération des pages avec la commande \textit{genere} réalisée en Python.
+Nous avons jugé plus élégant de copier le gabarit, d'y insérer les ressources récoltées par \textit{extract} et d'en générer une nouvelle page HTML plutôt que d'avoir le gabarit de la page entreposé dans une énorme chaîne de caractères.
+Cela nous évite d'avoir à importer une librairie additionnelle pour générer élégamment du code HTML avec Python.
+
+\subsection{\textit{Wrappers}}
+Pour lancer avec aisance les commandes tel que demandé, nous avons ajouté des scripts \textit{wrappers} TCSH qui lancent à leur tour les fichiers Python.
+
+\end{document}
