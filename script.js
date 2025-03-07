@@ -14,8 +14,9 @@ let videoData = []; // Données des vidéos
 FONCTIONS UTILITAIRES
 ============================================================
 */
+
 function isVideo(path) {
-    const videoExtensions = ['.mp4', '.webm', '.avi', '.mov', '.flv', '.mkv'];
+    const videoExtensions = ['.mp4', '.webm', '.avi', '.mov', '.flv', '.mkv', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv'];
     return videoExtensions.some(extension => path.toLowerCase().endsWith(extension));
 }
 
@@ -57,13 +58,15 @@ function createPreviewBubble(content) { // Fonction pour afficher une bulle de p
 
 // Fonction pour décaler une bulle par rapport à la souris
 function positionPreviewBubble(bubble, x, y) {
+    const offset = 10;
+    const scrollOffset = window.scrollY; // Offset du scrolling à prendre en compte pour les tables très grande
     // TODO : Touver une alternative à style pour ne pas avoir de style "inline"
-    bubble.style.left = `${x + 10}px`;
-    bubble.style.top = `${y + 10}px`;
+    bubble.style.left = `${x + offset}px`;
+    bubble.style.top = `${y + offset + scrollOffset}px`;
 }
 
 // Ajouter les previews aux images
-function attachImagePreviewListeners() {
+function attachPreviewListeners() {
     const rows = document.querySelectorAll('#mainTable tbody tr');
     rows.forEach((row, index) => {
         // Obtenir le chemin et le alt à partir de la table
@@ -71,13 +74,18 @@ function attachImagePreviewListeners() {
         const src = cells[0]?.textContent || '';
         const alt = cells[1]?.textContent || '';
         
-        if (index === 0 || !src || isVideo(src)) { // Sauter les lignes sans image
+        if (index === 0 || !src ) { // Sauter les lignes sans image
             return;
         }
 
         row.addEventListener('mousedown', function (event) {
-            const image = imageData[index - 1]; // Ajustement de l'index puisqu'on passe par-dessus la première ligne de la table
-            const bubble = createPreviewBubble(`<img src="${image.src}" alt="${image.alt}" class="d-block w-100" />`);
+            let bubble;
+            if (isVideo(src)) {
+                const videoPreview = `<video muted class="w-100"><source src="${src}" type="video/${src.slice(-3)}">Your browser does not support the video tag.</video>`;               
+                bubble = createPreviewBubble(videoPreview);
+            } else {
+                bubble = createPreviewBubble(`<img src="${src}" alt="${alt}" class="d-block w-100" />`);
+            }
             positionPreviewBubble(bubble, event.clientX, event.clientY);
 
             // Handling de moveEvent pour bouger l'image avec la souris!
@@ -189,7 +197,7 @@ function showTableView() {
     carouselButton.addEventListener('click', showCarousel);
     galleryButton.addEventListener('click', showGallery);
 
-    attachImagePreviewListeners();
+    attachPreviewListeners();
 }
 
 // Fonction pour ajouter le bouton "Back"
@@ -215,25 +223,63 @@ function showCarousel() {
     carouselContainer.id = 'imageCarousel';
     carouselContainer.classList.add('carousel', 'slide');
     carouselContainer.setAttribute('data-bs-ride', 'carousel');
+
+    // Indicateurs
+    const carouselIndicators = document.createElement('ol');
+    carouselIndicators.classList.add('carousel-indicators');
     
+    // Inner
     const carouselInner = document.createElement('div');
     carouselInner.classList.add('carousel-inner');
 
-    // Items du carrousel
+    
     imageData.forEach((image, index) => {
+        const indicatorButton = document.createElement('button');
+        indicatorButton.setAttribute('type', 'button');
+        indicatorButton.setAttribute('data-bs-target', '#imageCarousel');
+        indicatorButton.setAttribute('data-bs-slide-to', index);
+        indicatorButton.setAttribute('aria-current', index === 0 ? 'true' : 'false');
+        indicatorButton.setAttribute('aria-label', 'Slide ' + (index + 1));
+        indicatorButton.classList.add('carousel-indicator');
+        if (index === 0) {
+            indicatorButton.classList.add('active');
+        }
+        carouselIndicators.appendChild(indicatorButton);
+
+        // Item du carrousel
         const carouselItem = document.createElement('div');
         carouselItem.classList.add('carousel-item');
-        if (index === 0) carouselItem.classList.add('active');
-
+        if (index === 0) { 
+            carouselItem.classList.add('active');
+        }
+            
+        // Image
         const img = document.createElement('img');
         img.src = image.src;
         img.classList.add('d-block', 'w-100');
         img.alt = image.alt || '';
 
+        // Caption de l'image
+        const caption = document.createElement('div');
+        caption.classList.add('carousel-caption', 'd-none', 'd-md-block');
+
+        const captionText = document.createElement('h5');
+        captionText.textContent = `Ressource ${index + 1}`; // Index + 1 pour le numéro de ressource
+        caption.appendChild(captionText);
+
+        // Si alt
+        if (image.alt) {
+            const altText = document.createElement('p');
+            altText.textContent = image.alt;
+            caption.appendChild(altText);
+        }
+
         carouselItem.appendChild(img);
+        carouselItem.appendChild(caption);
         carouselInner.appendChild(carouselItem);
     });
 
+    carouselContainer.appendChild(carouselIndicators);
     carouselContainer.appendChild(carouselInner);
 
     // Contrôles du carrousel
@@ -330,5 +376,5 @@ document.addEventListener('DOMContentLoaded', function () {
     //console.log("Buttons are ready!");
 
     // Event listeners pour les previews
-    attachImagePreviewListeners();
+    attachPreviewListeners();
 });
