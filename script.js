@@ -81,11 +81,10 @@ function attachPreviewListeners() {
         row.addEventListener('mousedown', function (event) {
             let bubble;
             if (isVideo(src)) {
-                // Create a preview for the video (first frame as thumbnail)
-                const videoPreview = `<video width="150" height="auto" poster="${src}" muted>
-                                      <source src="${src}" type="video/mp4">
-                                      Your browser does not support the video tag.
-                                      </video>`;
+                const videoPreview = `<video width="100%" height="auto" muted>
+                                        <source src="./test/Film_site.mp4" type="video">
+                                        Your browser does not support the video tag.
+                                    </video>`;               
                 bubble = createPreviewBubble(videoPreview);
             } else {
                 const image = imageData[index - 1]; // Ajustement de l'index puisqu'on passe par-dessus la première ligne de la table
@@ -202,7 +201,7 @@ function showTableView() {
     carouselButton.addEventListener('click', showCarousel);
     galleryButton.addEventListener('click', showGallery);
 
-    attachImagePreviewListeners();
+    attachPreviewListeners();
 }
 
 // Fonction pour ajouter le bouton "Back"
