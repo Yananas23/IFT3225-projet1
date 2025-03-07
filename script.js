@@ -81,11 +81,9 @@ function attachPreviewListeners() {
         row.addEventListener('mousedown', function (event) {
             let bubble;
             if (isVideo(src)) {
-                const video = videoData[index -1];
                 const videoPreview = `<video muted class="w-100"><source src="${src}" type="video/${src.slice(-3)}">Your browser does not support the video tag.</video>`;               
                 bubble = createPreviewBubble(videoPreview);
             } else {
-                const image = imageData[index - 1]; // Ajustement de l'index puisqu'on passe par-dessus la première ligne de la table
                 bubble = createPreviewBubble(`<img src="${src}" alt="${alt}" class="d-block w-100" />`);
             }
             positionPreviewBubble(bubble, event.clientX, event.clientY);
