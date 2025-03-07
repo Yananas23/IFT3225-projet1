@@ -16,7 +16,7 @@ FONCTIONS UTILITAIRES
 */
 
 function isVideo(path) {
-    const videoExtensions = ['.mp4', '.webm', '.avi', '.mov', '.flv', '.mkv', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', ];
+    const videoExtensions = ['.mp4', '.webm', '.avi', '.mov', '.flv', '.mkv', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv'];
     return videoExtensions.some(extension => path.toLowerCase().endsWith(extension));
 }
 
