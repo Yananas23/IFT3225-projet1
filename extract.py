@@ -6,6 +6,8 @@ import requests
 from bs4 import BeautifulSoup
 import io
 
+os.umask(0o022)
+
 # Forcer l'encodage en UTF-8 sur l'entrée/sortie
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
