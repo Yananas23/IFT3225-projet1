@@ -336,7 +336,7 @@ function showGallery() {
     // Créer les items de la gallerie
     imageData.forEach(image => {
         const col = document.createElement('div');
-        col.classList.add('col');
+        col.classList.add('col-12', 'col-sm-6', 'col-md-4');
 
         // Créer l'image avec coins arrondis
         const img = document.createElement('img');
