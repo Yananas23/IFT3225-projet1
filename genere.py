@@ -1,10 +1,7 @@
 #!/usr/bin/python3
-import os
 import sys
 import re
 import io
-
-os.umask(0o022)
 
 # Forcer l'encodage en UTF-8 sur l'entrée/sortie
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
