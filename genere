@@ -1,2 +1,2 @@
-#!/bin/tcsh
-python3 ./genere.py "$argv"
+#!/usr/bin/tcsh
+/usr/bin/python3 ./genere.py $argv

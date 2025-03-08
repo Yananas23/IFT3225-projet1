@@ -1,2 +1,2 @@
-#!/bin/tcsh
-python3 ./extract.py "$argv"
+#!/usr/bin/tcsh
+/usr/bin/python3 ./extract.py $argv
