@@ -163,7 +163,6 @@ def save_files(files, url, save_path):
     :param url: URL de la page d'origine
     :param save_path: Dossier de sauvegarde des fichiers
     """
-    os.makedirs(save_path, exist_ok=True)  # Crée le répertoire de destination si inexistant
 
     def join_url(base, path):
         """Concatène un chemin à une URL en gérant les séparateurs."""
@@ -239,7 +238,6 @@ def save_svg(svg_list, url, save_path):
     :param url: URL de la page d'origine
     :param save_path: Dossier de sauvegarde des fichiers
     """
-    os.makedirs(save_path, exist_ok=True)  # Crée le dossier si inexistant
 
     for svg, index in svg_list:
         if svg.startswith("<svg"):  # SVG inline détecté
@@ -336,6 +334,9 @@ def main():
         return
     
     soup = BeautifulSoup(page_content, "html.parser")
+    
+    if save_path:
+        os.makedirs(save_path, exist_ok=True, mode=0o755)  # Crée le répertoire de destination si inexistant
     
     print(f"PATH: {save_path if save_path is not None else url}")
     
