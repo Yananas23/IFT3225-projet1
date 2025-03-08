@@ -6,6 +6,8 @@ import requests
 from bs4 import BeautifulSoup
 import io
 
+os.umask(0o022)
+
 # Forcer l'encodage en UTF-8 sur l'entrée/sortie
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
@@ -336,7 +338,7 @@ def main():
     soup = BeautifulSoup(page_content, "html.parser")
     
     if save_path:
-        os.makedirs(save_path, exist_ok=True, mode=0o755)  # Crée le répertoire de destination si inexistant
+        os.makedirs(save_path, exist_ok=True)  # Crée le répertoire de destination si inexistant
     
     print(f"PATH: {save_path if save_path is not None else url}")
     
