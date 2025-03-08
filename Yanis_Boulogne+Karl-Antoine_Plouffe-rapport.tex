@@ -33,6 +33,9 @@
 }
 \newcommand \Align [2][t] {\begin{array}[#1]{@{}l} #2 \end{array}}
 
+\noindent Yanis Boulogne \newline
+Karl-Antoine Plouffe (20218864) \newline
+
 \section{Répartition des tâches}
 \bgroup
 \begin{table}[htbp]
@@ -111,6 +114,8 @@ Si c’est un ajout \textit{inline}, il y a deux posibilités:
 \end{itemize}
 Du côté de \textit{genere}, les images svg sont traitées comme les autres types d'image.
 
+\newpage
+
 \subsection{Gabarit}
 Nous tenons à mentionner l'utilisation d'un gabarit HTML pour simplifier la génération des pages avec la commande \textit{genere} réalisée en Python.
 Nous avons jugé plus élégant de copier le gabarit, d'y insérer les ressources récoltées par \textit{extract} et d'en générer une nouvelle page HTML plutôt que d'avoir le gabarit de la page entreposé dans une énorme chaîne de caractères.
@@ -118,5 +123,12 @@ Cela nous évite d'avoir à importer une librairie additionnelle pour générer 
 
 \subsection{\textit{Wrappers}}
 Pour lancer avec aisance les commandes tel que demandé, nous avons ajouté des scripts \textit{wrappers} TCSH qui lancent à leur tour les fichiers Python.
+
+\section{Exécution}
+À moins d'être ajoutées au \textit{PATH}, ce que nous assumons ne pas pouvoir faire au DIRO, 
+les commandes doivent être lancé en spécifiant leur chemin (exemple: ./extract -h). 
+À cause des politiques \textit{umask} en place au DIRO, 
+il est possible qu'une page web générée au DIRO dans le cadre de ce projet ne soit pas immédiatement disponible publiquement.
+Il faudra donc faire usahe de \textit{chmod} pour en permettre la lecture (exemple: chmod 644 page1.html) si ont veut pouvoir la consulter avec un navigateur web.
 
 \end{document}
