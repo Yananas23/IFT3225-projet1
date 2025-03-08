@@ -338,7 +338,7 @@ def main():
     soup = BeautifulSoup(page_content, "html.parser")
     
     if save_path:
-        os.makedirs(save_path, exist_ok=True, mode=0o755)  # Crée le répertoire de destination si inexistant
+        os.makedirs(save_path, exist_ok=True)  # Crée le répertoire de destination si inexistant
     
     print(f"PATH: {save_path if save_path is not None else url}")
     
