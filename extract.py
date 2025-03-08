@@ -364,7 +364,7 @@ def main():
     if not no_svg:
         svg = extract_svg(soup)
         for src, alt in svg:
-            if not save_path or (save_path and not src.startswith("http")):
+            if not save_path or (save_path and not (src.startswith("http") or src.startswith("<svg"))):
                 print(f"SVG {src} \"{alt}\"")            
         if save_path:
                 save_svg(svg, url, save_path)                    
