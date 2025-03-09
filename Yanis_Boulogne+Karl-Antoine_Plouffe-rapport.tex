@@ -33,7 +33,7 @@
 }
 \newcommand \Align [2][t] {\begin{array}[#1]{@{}l} #2 \end{array}}
 
-\noindent Yanis Boulogne \newline
+\noindent Yanis Boulogne (20316250)\newline
 Karl-Antoine Plouffe (20218864) \newline
 
 \section{Répartition des tâches}
@@ -63,10 +63,15 @@ Karl-Antoine Plouffe (20218864) \newline
 
 \section{Pages générées}
 \begin{itemize}
-  \item \url{https://www.ableton.com/en/} \qquad Page abritée au DIRO : \url{url1b}
-  \item \url{https://www.ville-dechy.fr/} \qquad Page abritée au DIRO : \url{url2b}
-  \item \url{https://montreal.ca/calendrier-culturel} \qquad Page abritée au DIRO : \url{url3b}
+  \item \texttt{./extract -p ./img1 -i -v "https://www.ableton.com/en/" | ./genere > page1.html} \\
+  \url{https://www.ableton.com/en/} \qquad Page abritée au DIRO : \href{https://www-ens.iro.umontreal.ca/hiver/~boulogny/page1.html}{page1.html}
+  \item \texttt{./extract -p ./img2 -i -s "https://www.ville-dechy.fr/" | ./genere > page2.html} \\
+  \url{https://www.ville-dechy.fr/} \qquad Page abritée au DIRO : \href{https://www-ens.iro.umontreal.ca/hiver/~boulogny/page2.html}{page2.html}
+  \item \texttt{./extract -p ./img3 -r .png -s  "https://www.umontreal.ca/" | ./genere > page3.html} \\
+  \url{https://montreal.ca/calendrier-culturel} \qquad Page abritée au DIRO : \href{https://www-ens.iro.umontreal.ca/hiver/~boulogny/page3.html}{page3.html}
 \end{itemize}
+
+\newpage
 \section{Langages et librairies utilisés}
 \subsection{Langages}
 \begin{itemize}
@@ -74,7 +79,6 @@ Karl-Antoine Plouffe (20218864) \newline
   \item Python 3
   \item TCSH
 \end{itemize}
-\newpage
 \subsection{Librairies}
 \begin{itemize}  
   \item Bootstrap 5.3.3
@@ -114,7 +118,6 @@ Si c’est un ajout \textit{inline}, il y a deux posibilités:
 \end{itemize}
 Du côté de \textit{genere}, les images svg sont traitées comme les autres types d'image.
 
-\newpage
 
 \subsection{Gabarit}
 Nous tenons à mentionner l'utilisation d'un gabarit HTML pour simplifier la génération des pages avec la commande \textit{genere} réalisée en Python.
@@ -131,8 +134,8 @@ Les commandes se trouvent aux endroits suivants :
 \begin{itemize}
   \item /www/ens/hiver/$\sim$plouffek/MidnightPillarPerceval/extract
   \item /www/ens/hiver/$\sim$plouffek/MidnightPillarPerceval/genere
-  \item Yanis
-  \item Yanis
+  \item /www/ens/hiver/$\sim$boulogny/MonkeyLimousineDrum/extract
+  \item /www/ens/hiver/$\sim$boulogny/MonkeyLimousineDrum/genere
 \end{itemize}
 À cause des politiques \textit{umask} en place au DIRO, 
 il est possible qu'une page web générée au DIRO dans le cadre de ce projet ne soit pas immédiatement disponible publiquement.
