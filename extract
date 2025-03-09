@@ -1,2 +1,10 @@
 #!/usr/bin/tcsh
+
+set original_dir = `pwd`
+set script_dir = `dirname\`realpath $0``
+
+cd $script_dir
+
 /usr/bin/python3 ./extract.py $argv
+
+cd $original_dir
