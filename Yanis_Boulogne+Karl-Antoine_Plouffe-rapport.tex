@@ -52,6 +52,7 @@ Karl-Antoine Plouffe (20218864) \newline
         \begin{itemize} 
             \item Création du gabarit HTML
             \item Implémentation de styles avec Bootstrap
+            \item Implémentation du scriptage DOM avec JavaScript
             \item Création des scripts "\textit{wrapper}"
             \item Tests d'exécution des commandes
             \item Rédaction du rapport
@@ -128,12 +129,16 @@ Cela nous évite d'avoir à importer une librairie additionnelle pour générer 
 Pour lancer avec aisance les commandes tel que demandé, nous avons ajouté des scripts \textit{wrappers} TCSH qui lancent à leur tour les fichiers Python.
 
 \section{Exécution des commandes}
+\textbf{Notez bien : il faut exécuter les commandes avec la version de Pythonn du DIRO sur le serveur \textit{ens}!} 
 À moins d'être ajoutées au \textit{PATH}, ce que nous assumons ne pas pouvoir faire au DIRO, 
 les commandes doivent être lancées en spécifiant leur chemin. 
 Les commandes se trouvent aux endroits suivants :
 \begin{itemize}
   \item /www/ens/hiver/$\sim$plouffek/MidnightPillarPerceval/extract
   \item /www/ens/hiver/$\sim$plouffek/MidnightPillarPerceval/genere
+\end{itemize}
+ou
+\begin{itemize}
   \item /www/ens/hiver/$\sim$boulogny/MonkeyLimousineDrum/extract
   \item /www/ens/hiver/$\sim$boulogny/MonkeyLimousineDrum/genere
 \end{itemize}
@@ -141,7 +146,7 @@ Les commandes se trouvent aux endroits suivants :
 il est possible qu'une page web générée au DIRO dans le cadre de ce projet ne soit pas immédiatement disponible publiquement.
 Il faudra donc faire usage de \textit{chmod} pour en permettre la lecture (exemple: chmod 644 page1.html) si ont veut pouvoir la consulter avec un navigateur web.
 \newline
-Toutes les dépendances à installer (Python, TCSH, BeautifulSoup, requests) sont déjà présentes au DIRO dans l'environnement \textit{ens} 
+Toutes les dépendances à installer (Python, TCSH, BeautifulSoup, requests) sont déjà présentes au DIRO sur le sevreur \textit{ens} 
 (donc après avoir lancé \textit{ssh ens} si on se connecte à distance via ssh).
 
 \end{document}
