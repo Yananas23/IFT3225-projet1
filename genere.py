@@ -32,10 +32,10 @@ def generer_html(images, videos, svgs):
     dans la section <tbody>. En cas d'erreur de lecture du modèle, le script s'arrête avec un message approprié.
     """
     try:
-        with open("$2y$10$16Z2JOTZ74IW9OcZejNYjeyTawTpXXqt4iOrt282RdtE095khYjUm.html", "r", encoding="utf-8") as template_file:
+        with open("$2y$10$16Z2JOTZ74IW9OcZejNYjey.html", "r", encoding="utf-8") as template_file:
             template = template_file.read()
     except FileNotFoundError:
-        print("Erreur: Le fichier template.html est introuvable.")
+        print("Erreur: Le fichier template $2y$10$16Z2JOTZ74IW9OcZejNYjey.html est introuvable.")
         sys.exit(1)
 
     ressources_html = ""
