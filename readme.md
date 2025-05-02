@@ -1,6 +1,6 @@
 # Extracteur Web & Générateur de Pages HTML
 
-Ce projet a été développé par Yanis Boulogne et Karl-Antoine Plouffe pour le cours IFT3225 - Framework Web à l'Université de Montréal.
+Ce projet a été développé par Yanis Boulogne et Karl-Antoine Plouffe pour le cours IFT3225 à l'Université de Montréal.
 
 ## Objectif du projet
 
@@ -133,28 +133,3 @@ Options disponibles:
 - Création des scripts "wrapper"
 - Tests d'exécution des commandes
 - Rédaction du rapport
-
-## Exécution sur le serveur DIRO
-
-**Note importante**: Les commandes doivent être exécutées avec la version de Python du DIRO sur le serveur *ens*!
-
-Les commandes se trouvent aux endroits suivants:
-- `/www/ens/hiver/~plouffek/MidnightPillarPerceval/extract`
-- `/www/ens/hiver/~plouffek/MidnightPillarPerceval/genere`
-
-ou
-
-- `/www/ens/hiver/~boulogny/MonkeyLimousineDrum/extract`
-- `/www/ens/hiver/~boulogny/MonkeyLimousineDrum/genere`
-
-En raison des politiques *umask* en place au DIRO, il est possible qu'une page web générée ne soit pas immédiatement disponible publiquement. Il faudra utiliser `chmod` pour en permettre la lecture (exemple: `chmod 644 page1.html`).
-
-## Pages générées (exemples)
-
-- Page 1: [https://www-ens.iro.umontreal.ca/hiver/~boulogny/page1.html](https://www-ens.iro.umontreal.ca/hiver/~boulogny/page1.html)
-- Page 2: [https://www-ens.iro.umontreal.ca/hiver/~boulogny/page2.html](https://www-ens.iro.umontreal.ca/hiver/~boulogny/page2.html)
-- Page 3: [https://www-ens.iro.umontreal.ca/hiver/~boulogny/page3.html](https://www-ens.iro.umontreal.ca/hiver/~boulogny/page3.html)
-
----
-
-Projet développé par Yanis Boulogne (20316250) et Karl-Antoine Plouffe (20218864) dans le cadre du cours IFT3225 - Framework Web à l'Université de Montréal.
